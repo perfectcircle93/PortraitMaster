@@ -13,22 +13,24 @@ exports.add = async (req, res) => {
 
       const fileName = file.path.split('/').slice(-1)[0]; // cut only filename from full path, e.g. C:/test/abc.jpg -> abc.jpg
       const fileExt = fileName.split('.').slice(-1)[0];
-      const checkString = new RegExp(/^[a-zA-Z]*$/, 'g');
-      const correctTitle = checkString.test(title);
-      const correctAuthor = checkString.test(author);
+      const textPattern = () => new RegExp(/^([A-z]|\s)*$/, 'g');
+      const correctTitle = textPattern().test(title);
+      const correctAuthor = textPattern().test(author);
 
       const checkMail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'g');
       const correctMail = checkMail.test(email);
 
-      if (
+      console.log(correctTitle, correctAuthor, correctMail);
+
+      if ((
           fileExt == 'jpg' 
           || fileExt == 'gif' 
-          || fileExt == 'png'
+          || fileExt == 'png')
           && title.length <= 25
           && author.length <= 50
-          && correctTitle == true
-          && correctAuthor == true
-          && correctMail == true 
+          && correctTitle 
+          && correctAuthor 
+          && correctMail  
         ) {
           const newPhoto = new Photo({ title, author, email, src: fileName, votes: 0 });
           await newPhoto.save();
